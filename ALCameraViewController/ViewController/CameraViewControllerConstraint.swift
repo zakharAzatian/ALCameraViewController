@@ -438,7 +438,7 @@ extension CameraViewController {
         view.addConstraint(flashButtonGravityConstraint!)
     }
     
-    func configDetectionAreaViewConsdatraints() {
+    func configDetectionAreaViewConstraints() {
         detectionAreaView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         detectionAreaView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         detectionAreaView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
