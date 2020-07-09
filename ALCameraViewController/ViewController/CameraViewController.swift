@@ -78,16 +78,32 @@ open class CameraViewController: UIViewController {
     
     var flashButtonEdgeConstraint: NSLayoutConstraint?
     var flashButtonGravityConstraint: NSLayoutConstraint?
-
-    let cameraView: CameraView = {
+    
+    var objectRecognizer: ObjectRecognizer?
+    
+    lazy private(set) var cameraView: CameraView = {
         let cameraView = CameraView()
         cameraView.translatesAutoresizingMaskIntoConstraints = false
+        cameraView.captureOutputEvent = { [weak self] buffer in
+            self?.objectRecognizer?.recognize(buffer: buffer, completion: { isRecognized, result in
+                DispatchQueue.main.async {
+                    self?.recognitionResultLabel.text = result
+                }
+            })
+        }
         return cameraView
+    }()
+    
+    public let recognitionResultLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     
     public let detectionAreaView: DetectionAreaView = {
         let view = DetectionAreaView()
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.setTitle("Left palm", font: UIFont.montserratSemiBold(size: 17))
         return view
     }()
     
@@ -196,7 +212,8 @@ open class CameraViewController: UIViewController {
             cameraButton,
             closeButton,
             flashButton,
-            containerSwapLibraryButton].forEach({ view.addSubview($0) })
+            containerSwapLibraryButton,
+            recognitionResultLabel].forEach({ view.addSubview($0) })
         [swapButton, libraryButton].forEach({ containerSwapLibraryButton.addSubview($0) })
         view.setNeedsUpdateConstraints()
     }
@@ -242,6 +259,7 @@ open class CameraViewController: UIViewController {
         configFlashGravityButtonConstraint(statusBarOrientation)
         
         configDetectionAreaViewConstraints()
+        configRecognitionResultLabelConstraints()
 
         rotate(actualInterfaceOrientation: statusBarOrientation)
         

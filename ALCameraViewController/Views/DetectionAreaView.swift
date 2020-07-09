@@ -11,8 +11,6 @@ import UIKit
 final public class DetectionAreaView: UIView {
     var sidePadding: CGFloat = 12.0
     var holeShapecornerRadius: CGFloat = 16.0
-    var title: String = ""
-    var titleFont: UIFont = .systemFont(ofSize: 17)
     
     private let backgroundView = UIView()
     private let maskLayer = CAShapeLayer()
@@ -38,6 +36,11 @@ final public class DetectionAreaView: UIView {
         validateLayout()
     }
     
+    func setTitle(_ title: String, font: UIFont?) {
+        titleLabel.text = title
+        titleLabel.font = font
+    }
+    
     private func validateLayout() {
         let width = bounds.width - sidePadding * 2
         let size = CGSize(width: width, height: width)
@@ -54,7 +57,7 @@ final public class DetectionAreaView: UIView {
         
         titleLabel.center = center
         titleLabel.frame.origin.y = viewOrigin.y - 36.0
-        titleLabel.frame.size = CGSize(width: 82.0, height: 20.0)
+        titleLabel.frame.size = CGSize(width: bounds.width, height: 20.0)
     }
     
     private func setupHoleView() {
@@ -72,7 +75,5 @@ final public class DetectionAreaView: UIView {
         addSubview(titleLabel)
         titleLabel.textAlignment = .center
         titleLabel.textColor = .white
-        titleLabel.text = title
-        titleLabel.font = titleFont
     }
 }

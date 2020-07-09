@@ -438,10 +438,15 @@ extension CameraViewController {
         view.addConstraint(flashButtonGravityConstraint!)
     }
     
-    func configDetectionAreaViewConstraints() {
+    func configDetectionAreaViewConsdatraints() {
         detectionAreaView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         detectionAreaView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         detectionAreaView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         detectionAreaView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    }
+    
+    func configRecognitionResultLabelConstraints() {
+        recognitionResultLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16.0).isActive = true
+        recognitionResultLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     }
 }

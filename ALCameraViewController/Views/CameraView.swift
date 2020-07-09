@@ -8,6 +8,7 @@
 
 import UIKit
 import AVFoundation
+import Vision
 
 public class CameraView: UIView {
     
@@ -20,6 +21,8 @@ public class CameraView: UIView {
     let cameraQueue = DispatchQueue(label: "com.zero.ALCameraViewController.Queue")
 
     public var currentPosition = CameraGlobals.shared.defaultCameraPosition
+    
+    var captureOutputEvent: ((CMSampleBuffer) -> Void)?
     
     public func startSession() {
         session = AVCaptureSession()
@@ -50,8 +53,12 @@ public class CameraView: UIView {
 
         imageOutput = AVCaptureStillImageOutput()
         imageOutput.outputSettings = outputSettings
+        
+        let dataOutput = AVCaptureVideoDataOutput()
+        dataOutput.setSampleBufferDelegate(self, queue: cameraQueue)
 
         session.addOutput(imageOutput)
+        session.addOutput(dataOutput)
 
         cameraQueue.sync {
             session.startRunning()
@@ -240,4 +247,11 @@ public class CameraView: UIView {
         }
     }
     
+}
+
+// MARK: - AVCapture Video Data Output SampleBuffer Delegate
+extension CameraView: AVCaptureVideoDataOutputSampleBufferDelegate {
+    public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        captureOutputEvent?(sampleBuffer)
+    }
 }
