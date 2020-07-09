@@ -80,6 +80,11 @@ open class CameraViewController: UIViewController {
     var flashButtonGravityConstraint: NSLayoutConstraint?
     
     var objectRecognizer: ObjectRecognizer?
+    var overlayImage: UIImage? {
+        didSet {
+            overlayImageView.image = overlayImage
+        }
+    }
     
     lazy private(set) var cameraView: CameraView = {
         let cameraView = CameraView()
@@ -92,6 +97,14 @@ open class CameraViewController: UIViewController {
             })
         }
         return cameraView
+    }()
+    
+    lazy private(set) var overlayImageView: UIImageView = {
+        let imageView = UIImageView()
+        detectionAreaView.areaFrameDidChange = { frame in
+            imageView.frame = frame
+        }
+        return imageView
     }()
     
     public let recognitionResultLabel: UILabel = {
@@ -209,6 +222,7 @@ open class CameraViewController: UIViewController {
         view.backgroundColor = UIColor.black
         [cameraView,
             detectionAreaView,
+            overlayImageView,
             cameraButton,
             closeButton,
             flashButton,

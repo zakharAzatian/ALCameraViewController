@@ -10,7 +10,13 @@ import UIKit
 
 final public class DetectionAreaView: UIView {
     var sidePadding: CGFloat = 12.0
-    var holeShapecornerRadius: CGFloat = 16.0
+    var areaShapecornerRadius: CGFloat = 16.0
+    var areaFrameDidChange: ((CGRect) -> Void)?
+    var areaFrame: CGRect = .zero {
+        didSet {
+            areaFrameDidChange?(areaFrame)
+        }
+    }
     
     private let backgroundView = UIView()
     private let maskLayer = CAShapeLayer()
@@ -47,7 +53,8 @@ final public class DetectionAreaView: UIView {
         let viewOrigin = CGPoint(x: center.x - size.width / 2, y: center.y - size.height / 2)
         
         let rect = CGRect(origin: viewOrigin, size: size)
-        let boxPath = UIBezierPath(roundedRect: rect, cornerRadius: holeShapecornerRadius)
+        areaFrame = rect
+        let boxPath = UIBezierPath(roundedRect: rect, cornerRadius: areaShapecornerRadius)
         let path = UIBezierPath(rect: backgroundView.bounds)
         path.append(boxPath)
         
