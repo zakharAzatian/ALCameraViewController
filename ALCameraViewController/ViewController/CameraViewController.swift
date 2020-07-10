@@ -89,12 +89,28 @@ open class CameraViewController: UIViewController {
     var tipsType: TipsType = .hand
     var tipsWasNotPresented = true
     
+    let cameraButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 64, height: 64))
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isEnabled = false
+        button.setImage(UIImage(named: "cameraButton",
+                                in: CameraGlobals.shared.bundle,
+                                compatibleWith: nil),
+                        for: .normal)
+        button.setImage(UIImage(named: "cameraButtonHighlighted",
+                                in: CameraGlobals.shared.bundle,
+                                compatibleWith: nil),
+                        for: .highlighted)
+        return button
+    }()
+    
     lazy private(set) var cameraView: CameraView = {
         let cameraView = CameraView()
         cameraView.translatesAutoresizingMaskIntoConstraints = false
         
-        let recognizeCompletion: (Bool, String) -> Void = { [recognitionResultLabel] isRecognized, result in
+        let recognizeCompletion: (Bool, String) -> Void = { [recognitionResultLabel, cameraButton] isRecognized, result in
             DispatchQueue.main.async {
+                cameraButton.isEnabled = isRecognized
                 recognitionResultLabel.text = result
             }
         }
@@ -123,21 +139,6 @@ open class CameraViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.setTitle("Left palm", font: UIFont.montserratSemiBold(size: 17))
         return view
-    }()
-    
-    let cameraButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 64, height: 64))
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.isEnabled = false
-        button.setImage(UIImage(named: "cameraButton",
-                                in: CameraGlobals.shared.bundle,
-                                compatibleWith: nil),
-                        for: .normal)
-        button.setImage(UIImage(named: "cameraButtonHighlighted",
-                                in: CameraGlobals.shared.bundle,
-                                compatibleWith: nil),
-                        for: .highlighted)
-        return button
     }()
     
     let closeButton: UIButton = {
