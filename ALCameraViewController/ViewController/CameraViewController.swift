@@ -89,12 +89,14 @@ open class CameraViewController: UIViewController {
     lazy private(set) var cameraView: CameraView = {
         let cameraView = CameraView()
         cameraView.translatesAutoresizingMaskIntoConstraints = false
-        cameraView.captureOutputEvent = { [weak self] buffer in
-            self?.objectRecognizer?.recognize(buffer: buffer, completion: { isRecognized, result in
-                DispatchQueue.main.async {
-                    self?.recognitionResultLabel.text = result
-                }
-            })
+        
+        let recognizeCompletion: (Bool, String) -> Void = { [recognitionResultLabel] isRecognized, result in
+            DispatchQueue.main.async {
+                recognitionResultLabel.text = result
+            }
+        }
+        cameraView.captureOutputEvent = { [objectRecognizer] buffer in
+            objectRecognizer?.recognize(buffer: buffer, completion: recognizeCompletion)
         }
         return cameraView
     }()
