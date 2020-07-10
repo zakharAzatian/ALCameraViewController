@@ -85,6 +85,9 @@ open class CameraViewController: UIViewController {
             overlayImageView.image = overlayImage
         }
     }
+
+    var tipsType: TipsType = .hand
+    var tipsWasNotPresented = true
     
     lazy private(set) var cameraView: CameraView = {
         let cameraView = CameraView()
@@ -318,6 +321,7 @@ open class CameraViewController: UIViewController {
      */
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        showTipsView()
         if cameraView.session?.isRunning == true {
             notifyCameraReady()
         }
@@ -509,6 +513,14 @@ open class CameraViewController: UIViewController {
         }
         
         permissionsView.configureInView(view, title: title, description: desc, completion: { [weak self] in self?.close() })
+    }
+    
+    private func showTipsView() {
+        guard tipsWasNotPresented else { return }
+        let tipsController = TipsAlertViewController()
+        tipsController.type = tipsType
+        present(tipsController, animated: true)
+        tipsWasNotPresented = false
     }
     
     /**
