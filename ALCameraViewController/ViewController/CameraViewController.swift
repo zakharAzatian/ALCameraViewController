@@ -618,6 +618,7 @@ open class CameraViewController: UIViewController {
     
     private func startConfirmController(uiImage: UIImage) {
         let confirmViewController = ConfirmViewController(image: uiImage, croppingParameters: croppingParameters)
+        confirmViewController.objectRecognizer = objectRecognizer
         confirmViewController.onComplete = { [weak self] image, asset in
             defer {
                 self?.dismiss(animated: true, completion: nil)
@@ -638,6 +639,7 @@ open class CameraViewController: UIViewController {
     
     private func startConfirmController(asset: PHAsset) {
         let confirmViewController = ConfirmViewController(asset: asset, croppingParameters: croppingParameters)
+        confirmViewController.objectRecognizer = objectRecognizer
         confirmViewController.onComplete = { [weak self] image, asset in
             defer {
                 self?.dismiss(animated: true, completion: nil)

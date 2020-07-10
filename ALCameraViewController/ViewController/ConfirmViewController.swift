@@ -66,6 +66,7 @@ public class ConfirmViewController: UIViewController {
     }
 	
 	public var onComplete: CameraViewCompletion?
+    public var objectRecognizer: ObjectRecognizer?
 
 	let asset: PHAsset?
 	let image: UIImage?
@@ -175,12 +176,30 @@ public class ConfirmViewController: UIViewController {
 	
 	private func configureWithImage(_ image: UIImage) {
 		buttonActions()
-		
 		imageView.image = image
 	}
+    
+    private func presentRetakeAlert(message: String) {
+        let alertController = AlertViewController()
+        alertController.setup(with: .init(title: "Please retake a photo", message: message, buttonTitle: "RETAKE", buttonAction: {
+            self.cancel()
+        }))
+        present(alertController, animated: true)
+    }
 
 	private func buttonActions() {
-		confirmButton.action = { [weak self] in self?.confirmPhoto() }
+		confirmButton.action = { [weak self] in
+            guard let image = self?.imageView.image else { return }
+            self?.objectRecognizer?.recognize(image: image, completion: { result in
+                switch result {
+                case .success:
+                    self?.confirmPhoto(image)
+                case .failure(let error):
+                    self?.presentRetakeAlert(message: error.localizedDescription)
+                }
+            })
+            
+        }
 		retakeButton.action = { [weak self] in self?.cancel() }
 	}
 	
@@ -188,14 +207,10 @@ public class ConfirmViewController: UIViewController {
 		onComplete?(nil, nil)
 	}
 	
-	internal func confirmPhoto() {
-		
-		guard let image = imageView.image else {
-			return
-		}
+    internal func confirmPhoto(_ image: UIImage) {
 		
 		disable()
-		
+		 
 		imageView.isHidden = true
 		
 		showSpinner()
