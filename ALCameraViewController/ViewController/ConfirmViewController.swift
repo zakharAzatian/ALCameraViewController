@@ -12,6 +12,7 @@ import Photos
 public class ConfirmViewController: UIViewController {
 	
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var bottomInstrumentsView: UIView!
     @IBOutlet weak var confirmButton: UIButton!
     @IBOutlet weak var retakeButton: UIButton! {
         didSet {
@@ -24,62 +25,22 @@ public class ConfirmViewController: UIViewController {
     }
 
     private let detectionAreaView = DetectionAreaView()
-    private let cropOverlay = CropOverlay()
     private var spinner: UIActivityIndicatorView? = nil
-    private var cropOverlayLeftConstraint = NSLayoutConstraint()
-    private var cropOverlayTopConstraint = NSLayoutConstraint()
-    private var cropOverlayWidthConstraint = NSLayoutConstraint()
-    private var cropOverlayHeightConstraint = NSLayoutConstraint()
     private var isFirstLayout = true
-	
-    var croppingParameters: CroppingParameters {
-        didSet {
-            cropOverlay.isResizable = croppingParameters.allowResizing
-            cropOverlay.minimumSize = croppingParameters.minimumSize
-        }
-    }
-
-    private let cropOverlayDefaultPadding: CGFloat = 20
-    private var cropOverlayDefaultFrame: CGRect {
-        let buttonsViewGap: CGFloat = 20 * 2 + 64
-        let centeredViewBounds: CGRect
-        if view.bounds.size.height > view.bounds.size.width {
-            centeredViewBounds = CGRect(x: 0,
-                                        y: 0,
-                                        width: view.bounds.size.width,
-                                        height: view.bounds.size.height - buttonsViewGap)
-        } else {
-            centeredViewBounds = CGRect(x: 0,
-                                        y: 0,
-                                        width: view.bounds.size.width - buttonsViewGap,
-                                        height: view.bounds.size.height)
-        }
-        
-        let cropOverlayWidth = min(centeredViewBounds.size.width, centeredViewBounds.size.height) - 2 * cropOverlayDefaultPadding
-        let cropOverlayX = centeredViewBounds.size.width / 2 - cropOverlayWidth / 2
-        let cropOverlayY = centeredViewBounds.size.height / 2 - cropOverlayWidth / 2
-
-        return CGRect(x: cropOverlayX,
-                      y: cropOverlayY,
-                      width: cropOverlayWidth,
-                      height: cropOverlayWidth)
-    }
-	
+    
 	public var onComplete: CameraViewCompletion?
     public var objectRecognizer: ObjectRecognizer?
 
 	let asset: PHAsset?
 	let image: UIImage?
 	
-	public init(image: UIImage, croppingParameters: CroppingParameters) {
-		self.croppingParameters = croppingParameters
+	public init(image: UIImage) {
 		self.asset = nil
 		self.image = image
 		super.init(nibName: "ConfirmViewController", bundle: CameraGlobals.shared.bundle)
 	}
 	
-	public init(asset: PHAsset, croppingParameters: CroppingParameters) {
-		self.croppingParameters = croppingParameters
+	public init(asset: PHAsset) {
 		self.asset = asset
 		self.image = nil
 		super.init(nibName: "ConfirmViewController", bundle: CameraGlobals.shared.bundle)
@@ -100,7 +61,6 @@ public class ConfirmViewController: UIViewController {
 	public override func viewDidLoad() {
 		super.viewDidLoad()
 		view.backgroundColor = UIColor.black
-        loadCropOverlay()
 		showSpinner()
 		disable()
         setupDetectionAreaView()
@@ -136,7 +96,6 @@ public class ConfirmViewController: UIViewController {
 
         if isFirstLayout {
             isFirstLayout = false
-            activateCropOverlayConstraint()
             spinner?.center = view.center
         }
     }
@@ -144,34 +103,6 @@ public class ConfirmViewController: UIViewController {
     private func setupDetectionAreaView() {
         view.insertSubview(detectionAreaView, aboveSubview: imageView)
         detectionAreaView.pinToSuperview()
-    }
-
-    private func activateCropOverlayConstraint() {
-        cropOverlayLeftConstraint.constant = cropOverlayDefaultFrame.origin.x
-        cropOverlayTopConstraint.constant = cropOverlayDefaultFrame.origin.y
-        cropOverlayWidthConstraint.constant = cropOverlayDefaultFrame.size.width
-        cropOverlayHeightConstraint.constant = cropOverlayDefaultFrame.size.height
-
-        cropOverlayLeftConstraint.isActive = true
-        cropOverlayTopConstraint.isActive = true
-        cropOverlayWidthConstraint.isActive = true
-        cropOverlayHeightConstraint.isActive = true
-    }
-
-    private func loadCropOverlay() {
-        cropOverlay.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(cropOverlay)
-
-        cropOverlayLeftConstraint = cropOverlay.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0)
-        cropOverlayTopConstraint = cropOverlay.topAnchor.constraint(equalTo: view.topAnchor, constant: 0)
-        cropOverlayWidthConstraint = cropOverlay.widthAnchor.constraint(equalToConstant: 0)
-        cropOverlayHeightConstraint = cropOverlay.heightAnchor.constraint(equalToConstant: 0)
-
-        cropOverlay.delegate = self
-        cropOverlay.isHidden = !croppingParameters.isEnabled
-        cropOverlay.isResizable = croppingParameters.allowResizing
-        cropOverlay.isMovable = croppingParameters.allowMoving
-        cropOverlay.minimumSize = croppingParameters.minimumSize
     }
 	
 	private func configureWithImage(_ image: UIImage) {
@@ -193,12 +124,13 @@ public class ConfirmViewController: UIViewController {
             self?.objectRecognizer?.recognize(image: image, completion: { result in
                 switch result {
                 case .success:
-                    self?.confirmPhoto(image)
+                    self?.startScanning(completion: {
+                        self?.confirmPhoto(image)
+                    })
                 case .failure(let error):
                     self?.presentRetakeAlert(message: error.localizedDescription)
                 }
             })
-            
         }
 		retakeButton.action = { [weak self] in self?.cancel() }
 	}
@@ -206,13 +138,55 @@ public class ConfirmViewController: UIViewController {
 	internal func cancel() {
 		onComplete?(nil, nil)
 	}
+    
+    func startScanning(completion: VoidClosure?) {
+        let detectionAreaFrame = detectionAreaView.areaFrame
+        let scannerContainerView = UIView()
+        let scannerBarImageView = UIImageView()
+        let gridImageView = UIImageView()
+        
+        scannerContainerView.clipsToBounds = true
+        scannerContainerView.layer.cornerRadius = detectionAreaView.areaShapecornerRadius
+        scannerBarImageView.contentMode = .scaleAspectFill
+        scannerBarImageView.image = Image.Camera.scannerBar
+        gridImageView.image = Image.Camera.grid
+        
+        view.addSubview(scannerContainerView)
+        scannerContainerView.addSubview(gridImageView)
+        scannerContainerView.addSubview(scannerBarImageView)
+        
+        scannerContainerView.frame = detectionAreaFrame
+        gridImageView.frame = scannerContainerView.bounds
+        scannerBarImageView.frame = scannerContainerView.bounds
+        scannerBarImageView.frame.origin.y = scannerContainerView.bounds.origin.y - 40
+        
+        let numberOfScans = 5
+        let durationPerScan: TimeInterval = 1.5
+        let scanningDuration = Double(numberOfScans) * durationPerScan
+        let relativeDuration: TimeInterval = durationPerScan / scanningDuration
+        let hiddenDuration: TimeInterval = 0.3
+        
+        bottomInstrumentsView.isHiddenWithAnimation(true, duration: hiddenDuration)
+        UIView.animateKeyframes(withDuration: scanningDuration, delay: 0, options: [], animations: {
+            var shouldScanFromBottomToTop = false
+            for index in 0..<numberOfScans {
+                UIView.addKeyframe(withRelativeStartTime: relativeDuration * Double(index), relativeDuration: relativeDuration) {
+                    scannerBarImageView.transform = shouldScanFromBottomToTop ? .identity : CGAffineTransform(translationX: 0, y: scannerContainerView.bounds.height)
+                }
+                shouldScanFromBottomToTop.toggle()
+            }
+        }, completion: { _ in
+            self.bottomInstrumentsView.isHiddenWithAnimation(false, duration: hiddenDuration)
+            scannerContainerView.isHiddenWithAnimation(true, duration: hiddenDuration, completion: {
+                scannerContainerView.removeFromSuperview()
+                completion?()
+            })
+        })
+    }
 	
     internal func confirmPhoto(_ image: UIImage) {
-		
 		disable()
-		 
 		imageView.isHidden = true
-		
 		showSpinner()
 		
 		if let asset = asset {
@@ -227,25 +201,10 @@ public class ConfirmViewController: UIViewController {
 					self?.showNoImageScreen(error)
 				}
 				.setAsset(asset)
-			if croppingParameters.isEnabled {
-				let rect = normalizedRect(makeProportionalCropRect(), orientation: image.imageOrientation)
-				fetcher = fetcher.setCropRect(rect)
-			}
 			
 			fetcher = fetcher.fetch()
-		} else {
-			var newImage = image
-			
-			if croppingParameters.isEnabled {
-				let cropRect = makeProportionalCropRect()
-				let resizedCropRect = CGRect(x: (image.size.width) * cropRect.origin.x,
-				                     y: (image.size.height) * cropRect.origin.y,
-				                     width: (image.size.width * cropRect.width),
-				                     height: (image.size.height * cropRect.height))
-				newImage = image.crop(rect: resizedCropRect)
-			}
-			
-			onComplete?(newImage, nil)
+        } else {
+			onComplete?(image, nil)
 			hideSpinner()
 			enable()
 		}
@@ -281,32 +240,6 @@ public class ConfirmViewController: UIViewController {
 		
 		permissionsView.configureInView(view, title: error.localizedDescription, description: desc, completion: { [weak self] in self?.cancel() })
 	}
-	
-	private func makeProportionalCropRect() -> CGRect {
-        let cropRect = cropOverlay.croppedRect
-
-		let normalizedX = max(0, cropRect.origin.x / imageView.frame.width)
-		let normalizedY = max(0, cropRect.origin.y / imageView.frame.height)
-
-        let extraWidth = min(0, cropRect.origin.x)
-        let extraHeight = min(0, cropRect.origin.y)
-
-		let normalizedWidth = min(1, (cropRect.width + extraWidth) / imageView.frame.width)
-		let normalizedHeight = min(1, (cropRect.height + extraHeight) / imageView.frame.height)
-		
-		return CGRect(x: normalizedX, y: normalizedY, width: normalizedWidth, height: normalizedHeight)
-	}
-	
-}
-
-extension ConfirmViewController: CropOverlayDelegate {
-
-    func didMoveCropOverlay(newFrame: CGRect) {
-        cropOverlayLeftConstraint.constant = newFrame.origin.x
-        cropOverlayTopConstraint.constant = newFrame.origin.y
-        cropOverlayWidthConstraint.constant = newFrame.size.width
-        cropOverlayHeightConstraint.constant = newFrame.size.height
-    }
 }
 
 extension UIImage {

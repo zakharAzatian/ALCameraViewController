@@ -24,7 +24,7 @@ public extension CameraViewController {
 
         imagePicker.onSelectionComplete = { [weak imagePicker] asset in
             if let asset = asset {
-                let confirmController = ConfirmViewController(asset: asset, croppingParameters: croppingParameters)
+                let confirmController = ConfirmViewController(asset: asset)
                 confirmController.onComplete = { [weak imagePicker] image, asset in
                     if let image = image, let asset = asset {
                         completion(image, asset)
@@ -617,7 +617,7 @@ open class CameraViewController: UIViewController {
     }
     
     private func startConfirmController(uiImage: UIImage) {
-        let confirmViewController = ConfirmViewController(image: uiImage, croppingParameters: croppingParameters)
+        let confirmViewController = ConfirmViewController(image: uiImage)
         confirmViewController.objectRecognizer = objectRecognizer
         confirmViewController.onComplete = { [weak self] image, asset in
             defer {
@@ -638,7 +638,7 @@ open class CameraViewController: UIViewController {
     }
     
     private func startConfirmController(asset: PHAsset) {
-        let confirmViewController = ConfirmViewController(asset: asset, croppingParameters: croppingParameters)
+        let confirmViewController = ConfirmViewController(asset: asset)
         confirmViewController.objectRecognizer = objectRecognizer
         confirmViewController.onComplete = { [weak self] image, asset in
             defer {

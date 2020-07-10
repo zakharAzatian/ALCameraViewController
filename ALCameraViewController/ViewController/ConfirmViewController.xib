@@ -16,6 +16,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ConfirmViewController" customModule="TestsApp" customModuleProvider="target">
             <connections>
+                <outlet property="bottomInstrumentsView" destination="WtE-uC-QOj" id="h3G-NH-1LP"/>
                 <outlet property="confirmButton" destination="Pmw-P8-t3v" id="QYj-U3-4Oz"/>
                 <outlet property="imageView" destination="xU4-Gq-KaR" id="Bb8-UQ-9Mc"/>
                 <outlet property="retakeButton" destination="B1B-hd-fxa" id="KEB-jQ-B6F"/>
@@ -30,37 +31,49 @@
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="xU4-Gq-KaR">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                 </imageView>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pmw-P8-t3v">
-                    <rect key="frame" x="132" y="486" width="56" height="56"/>
-                    <color key="backgroundColor" name="Card-background-color"/>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WtE-uC-QOj">
+                    <rect key="frame" x="0.0" y="482" width="320" height="86"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pmw-P8-t3v">
+                            <rect key="frame" x="132" y="4" width="56" height="56"/>
+                            <color key="backgroundColor" name="Card-background-color"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="56" id="nzJ-7N-21o"/>
+                                <constraint firstAttribute="height" constant="56" id="whb-Vq-98P"/>
+                            </constraints>
+                            <state key="normal" image="checkbox-without-background-icn"/>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B1B-hd-fxa">
+                            <rect key="frame" x="222" y="18" width="76" height="28"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="28" id="eke-ab-SYA"/>
+                                <constraint firstAttribute="width" constant="76" id="hdC-8g-M0B"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" name="Montserrat-Bold" family="Montserrat" pointSize="11"/>
+                            <state key="normal" title="RETAKE">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="56" id="nzJ-7N-21o"/>
-                        <constraint firstAttribute="height" constant="56" id="whb-Vq-98P"/>
+                        <constraint firstItem="Pmw-P8-t3v" firstAttribute="centerX" secondItem="WtE-uC-QOj" secondAttribute="centerX" id="5bi-Nk-EnJ"/>
+                        <constraint firstAttribute="height" constant="86" id="VgJ-Jj-Vqh"/>
+                        <constraint firstItem="B1B-hd-fxa" firstAttribute="leading" secondItem="Pmw-P8-t3v" secondAttribute="trailing" constant="34" id="XA2-05-tLW"/>
+                        <constraint firstAttribute="bottom" secondItem="Pmw-P8-t3v" secondAttribute="bottom" constant="26" id="cTQ-pU-jKo"/>
+                        <constraint firstItem="B1B-hd-fxa" firstAttribute="centerY" secondItem="Pmw-P8-t3v" secondAttribute="centerY" id="fVT-6l-Jpg"/>
                     </constraints>
-                    <state key="normal" image="checkbox-without-background-icn"/>
-                </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B1B-hd-fxa">
-                    <rect key="frame" x="222" y="500" width="76" height="28"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="28" id="eke-ab-SYA"/>
-                        <constraint firstAttribute="width" constant="76" id="hdC-8g-M0B"/>
-                    </constraints>
-                    <fontDescription key="fontDescription" name="Montserrat-Bold" family="Montserrat" pointSize="11"/>
-                    <state key="normal" title="RETAKE">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    </state>
-                </button>
+                </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="xU4-Gq-KaR" firstAttribute="top" secondItem="mjF-ed-l6v" secondAttribute="top" id="3Qx-pc-HS3"/>
-                <constraint firstItem="B1B-hd-fxa" firstAttribute="leading" secondItem="Pmw-P8-t3v" secondAttribute="trailing" constant="34" id="Cdp-Kc-Da4"/>
                 <constraint firstItem="xU4-Gq-KaR" firstAttribute="leading" secondItem="mjF-ed-l6v" secondAttribute="leading" id="EMs-e6-LVG"/>
-                <constraint firstItem="qcc-F6-MM0" firstAttribute="bottom" secondItem="Pmw-P8-t3v" secondAttribute="bottom" constant="26" id="HiV-RU-FeR"/>
                 <constraint firstAttribute="trailing" secondItem="xU4-Gq-KaR" secondAttribute="trailing" id="OoI-eo-wLu"/>
-                <constraint firstItem="B1B-hd-fxa" firstAttribute="centerY" secondItem="Pmw-P8-t3v" secondAttribute="centerY" id="Ruh-KL-nJ0"/>
                 <constraint firstAttribute="bottom" secondItem="xU4-Gq-KaR" secondAttribute="bottom" id="TWV-hC-Eu7"/>
-                <constraint firstItem="Pmw-P8-t3v" firstAttribute="centerX" secondItem="mjF-ed-l6v" secondAttribute="centerX" id="VTU-oT-aNh"/>
+                <constraint firstItem="qcc-F6-MM0" firstAttribute="trailing" secondItem="WtE-uC-QOj" secondAttribute="trailing" id="ckY-ye-vme"/>
+                <constraint firstItem="WtE-uC-QOj" firstAttribute="leading" secondItem="qcc-F6-MM0" secondAttribute="leading" id="g0Z-ef-U5K"/>
+                <constraint firstItem="qcc-F6-MM0" firstAttribute="bottom" secondItem="WtE-uC-QOj" secondAttribute="bottom" id="t73-2T-JRO"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="qcc-F6-MM0"/>
             <point key="canvasLocation" x="-969" y="196"/>
