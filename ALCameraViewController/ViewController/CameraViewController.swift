@@ -193,7 +193,7 @@ open class CameraViewController: UIViewController {
                 allowsLibraryAccess: Bool = true,
                 allowsSwapCameraOrientation: Bool = true,
                 allowVolumeButtonCapture: Bool = true,
-                completion: @escaping CameraViewCompletion) {
+                completion: CameraViewCompletion?) {
 
         self.croppingParameters = croppingParameters
         self.allowsLibraryAccess = allowsLibraryAccess
