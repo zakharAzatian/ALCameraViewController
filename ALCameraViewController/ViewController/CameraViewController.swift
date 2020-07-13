@@ -234,7 +234,7 @@ open class CameraViewController: UIViewController {
             flashButton,
             containerSwapLibraryButton,
             recognitionResultLabel].forEach({ view.addSubview($0) })
-        [swapButton, libraryButton].forEach({ containerSwapLibraryButton.addSubview($0) })
+        [libraryButton].forEach({ containerSwapLibraryButton.addSubview($0) })
         view.setNeedsUpdateConstraints()
     }
     
@@ -261,7 +261,7 @@ open class CameraViewController: UIViewController {
         
         removeCloseButtonConstraints()
         configCloseButtonEdgeConstraint(statusBarOrientation)
-        configCloseButtonGravityConstraint(statusBarOrientation)
+//        configCloseButtonGravityConstraint(statusBarOrientation)
         
         removeContainerConstraints()
         configContainerEdgeConstraint(statusBarOrientation)
@@ -551,26 +551,8 @@ open class CameraViewController: UIViewController {
     
     internal func saveImage(image: UIImage) {
         let spinner = showSpinner()
-        cameraView.preview.isHidden = true
-
-        if allowsLibraryAccess {
-        _ = SingleImageSaver()
-            .setImage(image)
-            .onSuccess { [weak self] asset in
-                self?.layoutCameraResult(asset: asset)
-                self?.hideSpinner(spinner)
-            }
-            .onFailure { [weak self] _ in
-                self?.toggleButtons(enabled: true)
-                self?.showNoPermissionsView(library: true)
-                self?.cameraView.preview.isHidden = false
-                self?.hideSpinner(spinner)
-            }
-            .save()
-        } else {
-            layoutCameraResult(uiImage: image)
-            hideSpinner(spinner)
-        }
+        layoutCameraResult(uiImage: image)
+        hideSpinner(spinner)
     }
     
     internal func close() {

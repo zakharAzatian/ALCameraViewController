@@ -105,8 +105,8 @@ extension CameraViewController {
         
         switch statusBarOrientation {
         case .portrait:
-            attributeOne = .left
-            attributeTwo = .right
+            attributeOne = .right
+            attributeTwo = .left
             break
         case .landscapeRight:
             attributeOne = .bottom
@@ -179,47 +179,47 @@ extension CameraViewController {
      */
     func configSwapButtonEdgeConstraint(_ statusBarOrientation : UIInterfaceOrientation) {
         
-        let attributeOne : NSLayoutConstraint.Attribute
-        let attributeTwo : NSLayoutConstraint.Attribute
-
-        switch statusBarOrientation {
-        case .portrait:
-            attributeOne = .top
-            attributeTwo = .bottom
-            break
-        case .landscapeRight:
-            attributeOne = .left
-            attributeTwo = .right
-            break
-        case .landscapeLeft:
-            attributeOne = .right
-            attributeTwo = .left
-            break
-        default:
-            attributeOne = .bottom
-            attributeTwo = .top
-            break
-        }
-        
-        swapButtonEdgeOneConstraint = NSLayoutConstraint(
-            item: swapButton,
-            attribute: attributeOne,
-            relatedBy: .equal,
-            toItem: containerSwapLibraryButton,
-            attribute: attributeOne,
-            multiplier: 1.0,
-            constant: 0)
-        view.addConstraint(swapButtonEdgeOneConstraint!)
-        
-        swapButtonEdgeTwoConstraint = NSLayoutConstraint(
-            item: swapButton,
-            attribute: attributeTwo,
-            relatedBy: .equal,
-            toItem: containerSwapLibraryButton,
-            attribute: attributeTwo,
-            multiplier: 1.0,
-            constant: 0)
-        view.addConstraint(swapButtonEdgeTwoConstraint!)
+//        let attributeOne : NSLayoutConstraint.Attribute
+//        let attributeTwo : NSLayoutConstraint.Attribute
+//
+//        switch statusBarOrientation {
+//        case .portrait:
+//            attributeOne = .top
+//            attributeTwo = .bottom
+//            break
+//        case .landscapeRight:
+//            attributeOne = .left
+//            attributeTwo = .right
+//            break
+//        case .landscapeLeft:
+//            attributeOne = .right
+//            attributeTwo = .left
+//            break
+//        default:
+//            attributeOne = .bottom
+//            attributeTwo = .top
+//            break
+//        }
+//
+//        swapButtonEdgeOneConstraint = NSLayoutConstraint(
+//            item: swapButton,
+//            attribute: attributeOne,
+//            relatedBy: .equal,
+//            toItem: containerSwapLibraryButton,
+//            attribute: attributeOne,
+//            multiplier: 1.0,
+//            constant: 0)
+//        view.addConstraint(swapButtonEdgeOneConstraint!)
+//
+//        swapButtonEdgeTwoConstraint = NSLayoutConstraint(
+//            item: swapButton,
+//            attribute: attributeTwo,
+//            relatedBy: .equal,
+//            toItem: containerSwapLibraryButton,
+//            attribute: attributeTwo,
+//            multiplier: 1.0,
+//            constant: 0)
+//        view.addConstraint(swapButtonEdgeTwoConstraint!)
         
     }
     
@@ -228,15 +228,15 @@ extension CameraViewController {
      * axis center of CameraButton.
      */
     func configSwapButtonGravityConstraint(_ portrait: Bool) {
-        swapButtonGravityConstraint = NSLayoutConstraint(
-            item: swapButton,
-            attribute: portrait ? .right : .bottom,
-            relatedBy: .lessThanOrEqual,
-            toItem: containerSwapLibraryButton,
-            attribute: portrait ? .centerX : .centerY,
-            multiplier: 1.0,
-            constant: -4.0 * DeviceConfig.SCREEN_MULTIPLIER)
-        view.addConstraint(swapButtonGravityConstraint!)
+//        swapButtonGravityConstraint = NSLayoutConstraint(
+//            item: swapButton,
+//            attribute: portrait ? .right : .bottom,
+//            relatedBy: .lessThanOrEqual,
+//            toItem: containerSwapLibraryButton,
+//            attribute: portrait ? .centerX : .centerY,
+//            multiplier: 1.0,
+//            constant: -4.0 * DeviceConfig.SCREEN_MULTIPLIER)
+//        view.addConstraint(swapButtonGravityConstraint!)
     }
     
     func removeCloseButtonConstraints() {
@@ -248,24 +248,8 @@ extension CameraViewController {
      * Pin the close button to the left of the superview.
      */
     func configCloseButtonEdgeConstraint(_ statusBarOrientation : UIInterfaceOrientation) {
-        
-        let attribute : NSLayoutConstraint.Attribute = {
-            switch statusBarOrientation {
-            case .portrait: return .left
-            case .landscapeRight, .landscapeLeft: return .centerX
-            default: return .right
-            }
-        }()
-
-        closeButtonEdgeConstraint = NSLayoutConstraint(
-            item: closeButton,
-            attribute: attribute,
-            relatedBy: .equal,
-            toItem: attribute != .centerX ? view : cameraButton,
-            attribute: attribute,
-            multiplier: 1.0,
-            constant: attribute != .centerX ? 16 : 0)
-        view.addConstraint(closeButtonEdgeConstraint!)
+        closeButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16.0).isActive = true
+        closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16.0).isActive = true
     }
     
     /**
