@@ -12,14 +12,19 @@
         <array key="Montserrat-Bold.ttf">
             <string>Montserrat-Bold</string>
         </array>
+        <array key="Montserrat-SemiBold.ttf">
+            <string>Montserrat-SemiBold</string>
+        </array>
     </customFonts>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ConfirmViewController" customModule="TestsApp" customModuleProvider="target">
             <connections>
                 <outlet property="bottomInstrumentsView" destination="WtE-uC-QOj" id="h3G-NH-1LP"/>
+                <outlet property="bottomScanningView" destination="yWU-0E-n1r" id="0Bp-bx-mVs"/>
                 <outlet property="confirmButton" destination="Pmw-P8-t3v" id="QYj-U3-4Oz"/>
                 <outlet property="imageView" destination="xU4-Gq-KaR" id="Bb8-UQ-9Mc"/>
                 <outlet property="retakeButton" destination="B1B-hd-fxa" id="KEB-jQ-B6F"/>
+                <outlet property="scanningProgressBar" destination="xDr-sB-8tr" id="zdI-WJ-HvO"/>
                 <outlet property="view" destination="mjF-ed-l6v" id="OKv-Oe-lSO"/>
             </connections>
         </placeholder>
@@ -64,15 +69,47 @@
                         <constraint firstItem="B1B-hd-fxa" firstAttribute="centerY" secondItem="Pmw-P8-t3v" secondAttribute="centerY" id="fVT-6l-Jpg"/>
                     </constraints>
                 </view>
+                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yWU-0E-n1r">
+                    <rect key="frame" x="0.0" y="488" width="320" height="80"/>
+                    <subviews>
+                        <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xDr-sB-8tr">
+                            <rect key="frame" x="33" y="42" width="254" height="8"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="8" id="4cf-Lz-4w3"/>
+                            </constraints>
+                            <color key="progressTintColor" red="0.99607843137254903" green="0.99607843137254903" blue="0.99215686274509807" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="trackTintColor" red="0.99607843137254903" green="0.99607843137254903" blue="0.99215686274509807" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                        </progressView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Scanning" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eLj-Ji-6de">
+                            <rect key="frame" x="16" y="2" width="288" height="20"/>
+                            <fontDescription key="fontDescription" name="Montserrat-SemiBold" family="Montserrat" pointSize="17"/>
+                            <color key="textColor" name="Card-background-color"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="bottom" secondItem="xDr-sB-8tr" secondAttribute="bottom" constant="30" id="09K-cy-ulx"/>
+                        <constraint firstAttribute="trailing" secondItem="xDr-sB-8tr" secondAttribute="trailing" constant="33" id="5Mo-GH-1f5"/>
+                        <constraint firstAttribute="height" constant="80" id="K5g-6p-hr3"/>
+                        <constraint firstItem="xDr-sB-8tr" firstAttribute="leading" secondItem="yWU-0E-n1r" secondAttribute="leading" constant="33" id="LR6-tx-tON"/>
+                        <constraint firstItem="eLj-Ji-6de" firstAttribute="leading" secondItem="yWU-0E-n1r" secondAttribute="leading" constant="16" id="jYJ-aJ-FRH"/>
+                        <constraint firstAttribute="trailing" secondItem="eLj-Ji-6de" secondAttribute="trailing" constant="16" id="m1U-td-Ogm"/>
+                        <constraint firstItem="xDr-sB-8tr" firstAttribute="top" secondItem="eLj-Ji-6de" secondAttribute="bottom" constant="20" id="qtk-YZ-Zwq"/>
+                    </constraints>
+                </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="xU4-Gq-KaR" firstAttribute="top" secondItem="mjF-ed-l6v" secondAttribute="top" id="3Qx-pc-HS3"/>
                 <constraint firstItem="xU4-Gq-KaR" firstAttribute="leading" secondItem="mjF-ed-l6v" secondAttribute="leading" id="EMs-e6-LVG"/>
+                <constraint firstItem="qcc-F6-MM0" firstAttribute="trailing" secondItem="yWU-0E-n1r" secondAttribute="trailing" id="KUf-Xu-4fW"/>
                 <constraint firstAttribute="trailing" secondItem="xU4-Gq-KaR" secondAttribute="trailing" id="OoI-eo-wLu"/>
                 <constraint firstAttribute="bottom" secondItem="xU4-Gq-KaR" secondAttribute="bottom" id="TWV-hC-Eu7"/>
                 <constraint firstItem="qcc-F6-MM0" firstAttribute="trailing" secondItem="WtE-uC-QOj" secondAttribute="trailing" id="ckY-ye-vme"/>
                 <constraint firstItem="WtE-uC-QOj" firstAttribute="leading" secondItem="qcc-F6-MM0" secondAttribute="leading" id="g0Z-ef-U5K"/>
+                <constraint firstItem="qcc-F6-MM0" firstAttribute="bottom" secondItem="yWU-0E-n1r" secondAttribute="bottom" id="h75-Tj-3uJ"/>
+                <constraint firstItem="yWU-0E-n1r" firstAttribute="leading" secondItem="qcc-F6-MM0" secondAttribute="leading" id="oaR-Nu-6HZ"/>
                 <constraint firstItem="qcc-F6-MM0" firstAttribute="bottom" secondItem="WtE-uC-QOj" secondAttribute="bottom" id="t73-2T-JRO"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="qcc-F6-MM0"/>

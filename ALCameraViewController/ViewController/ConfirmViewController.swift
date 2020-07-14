@@ -14,6 +14,8 @@ public class ConfirmViewController: UIViewController {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var bottomInstrumentsView: UIView!
     @IBOutlet weak var confirmButton: UIButton!
+    @IBOutlet weak var scanningProgressBar: UIProgressView!
+    @IBOutlet weak var bottomScanningView: UIView!
     @IBOutlet weak var retakeButton: UIButton! {
         didSet {
             retakeButton.clipsToBounds = true
@@ -64,7 +66,8 @@ public class ConfirmViewController: UIViewController {
 		showSpinner()
 		disable()
         setupDetectionAreaView()
-		
+        setupProgressBar()
+        
 		if let asset = asset {
 			_ = SingleImageFetcher()
 				.setAsset(asset)
@@ -103,6 +106,15 @@ public class ConfirmViewController: UIViewController {
     private func setupDetectionAreaView() {
         view.insertSubview(detectionAreaView, aboveSubview: imageView)
         detectionAreaView.pinToSuperview()
+    }
+    
+    private func setupProgressBar() {
+        let cornerRadius: CGFloat = 4.0
+        scanningProgressBar.layer.masksToBounds = true
+        scanningProgressBar.layer.cornerRadius = cornerRadius
+        // Set the rounded edge for the inner bar
+        scanningProgressBar.layer.sublayers?[1].cornerRadius = cornerRadius
+        scanningProgressBar.layer.sublayers?[1].masksToBounds = true
     }
 	
 	private func configureWithImage(_ image: UIImage) {
@@ -167,7 +179,13 @@ public class ConfirmViewController: UIViewController {
         let hiddenDuration: TimeInterval = 0.3
         
         bottomInstrumentsView.isHiddenWithAnimation(true, duration: hiddenDuration)
+        bottomScanningView.isHiddenWithAnimation(false, duration: hiddenDuration)
         UIView.animateKeyframes(withDuration: scanningDuration, delay: 0, options: [], animations: {
+            
+            UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 1) {
+                self.scanningProgressBar.setProgress(1.0, animated: true)
+            }
+            
             var shouldScanFromBottomToTop = false
             for index in 0..<numberOfScans {
                 UIView.addKeyframe(withRelativeStartTime: relativeDuration * Double(index), relativeDuration: relativeDuration) {
@@ -175,8 +193,10 @@ public class ConfirmViewController: UIViewController {
                 }
                 shouldScanFromBottomToTop.toggle()
             }
+            
         }, completion: { _ in
             self.bottomInstrumentsView.isHiddenWithAnimation(false, duration: hiddenDuration)
+            self.bottomScanningView.isHiddenWithAnimation(true, duration: hiddenDuration)
             scannerContainerView.isHiddenWithAnimation(true, duration: hiddenDuration, completion: {
                 scannerContainerView.removeFromSuperview()
                 completion?()
