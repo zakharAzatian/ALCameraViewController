@@ -14,7 +14,7 @@ public typealias CameraViewCompletion = (UIImage?, PHAsset?) -> Void
 
 public extension CameraViewController {
     /// Provides an image picker wrapped inside a UINavigationController instance
-    class func imagePickerViewController(croppingParameters: CroppingParameters, completion: @escaping CameraViewCompletion) -> UINavigationController {
+    class func imagePickerViewController(croppingParameters: CroppingParameters, recognizer: ObjectRecognizer?, completion: @escaping CameraViewCompletion) -> UINavigationController {
         let imagePicker = PhotoLibraryViewController()
         let navigationController = UINavigationController(rootViewController: imagePicker)
         
@@ -25,6 +25,7 @@ public extension CameraViewController {
         imagePicker.onSelectionComplete = { [weak imagePicker] asset in
             if let asset = asset {
                 let confirmController = ConfirmViewController(asset: asset)
+                confirmController.objectRecognizer = recognizer
                 confirmController.onComplete = { [weak imagePicker] image, asset in
                     if let image = image, let asset = asset {
                         completion(image, asset)
@@ -561,7 +562,7 @@ open class CameraViewController: UIViewController {
     }
     
     internal func showLibrary() {
-        let imagePicker = CameraViewController.imagePickerViewController(croppingParameters: croppingParameters) { [weak self] image, asset in
+        let imagePicker = CameraViewController.imagePickerViewController(croppingParameters: croppingParameters, recognizer: objectRecognizer) { [weak self] image, asset in
             defer {
                 self?.dismiss(animated: true, completion: nil)
             }
