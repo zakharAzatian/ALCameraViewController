@@ -90,6 +90,8 @@ open class CameraViewController: UIViewController {
     var tipsType: TipsType = .hand
     var tipsWasNotPresented = true
     
+    private var shouldRecongnize = false
+    
     let cameraButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 64, height: 64))
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -115,7 +117,8 @@ open class CameraViewController: UIViewController {
                 recognitionResultLabel.text = result
             }
         }
-        cameraView.captureOutputEvent = { [objectRecognizer] buffer in
+        cameraView.captureOutputEvent = { [objectRecognizer, weak self] buffer in
+            guard self?.shouldRecongnize == true else { return }
             objectRecognizer?.recognize(buffer: buffer, completion: recognizeCompletion)
         }
         return cameraView
@@ -329,7 +332,7 @@ open class CameraViewController: UIViewController {
      */
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        cameraView.startSession()
+        shouldRecongnize = true
         addCameraObserver()
         addRotateObserver()
 
@@ -344,7 +347,15 @@ open class CameraViewController: UIViewController {
      */
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        if cameraView.session == nil {
+            cameraView.startSession()
+        } else {
+            cameraView.session.startRunning()
+        }
+        
         showTipsView()
+        
         if cameraView.session?.isRunning == true {
             notifyCameraReady()
         }
@@ -352,6 +363,7 @@ open class CameraViewController: UIViewController {
 
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        cameraView.session.stopRunning()
         NotificationCenter.default.removeObserver(self)
         volumeControl = nil
     }
@@ -544,6 +556,10 @@ open class CameraViewController: UIViewController {
         tipsController.type = tipsType
         present(tipsController, animated: true)
         tipsWasNotPresented = false
+        
+        tipsController.okayPressed = { [weak tipsController] in
+            tipsController?.dismiss(animated: true, completion: nil)
+        }
     }
     
     /**
@@ -560,8 +576,10 @@ open class CameraViewController: UIViewController {
         }
         
         if connection.isEnabled {
+            shouldRecongnize = false
             toggleButtons(enabled: false)
             cameraView.capturePhoto { [weak self] image in
+                self?.shouldRecongnize = true
                 guard let image = image else {
                     self?.toggleButtons(enabled: true)
                     return
@@ -589,7 +607,6 @@ open class CameraViewController: UIViewController {
             }
 
             guard let image = image, let asset = asset else {
-                self?.cameraView.startSession()
                 return
             }
 
@@ -597,9 +614,7 @@ open class CameraViewController: UIViewController {
         }
         
         imagePicker.modalPresentationStyle = .fullScreen
-        present(imagePicker, animated: true) { [weak self] in
-            self?.cameraView.stopSession()
-        }
+        present(imagePicker, animated: true)
     }
     
     internal func toggleFlash() {
@@ -622,13 +637,13 @@ open class CameraViewController: UIViewController {
     }
     
     internal func layoutCameraResult(uiImage: UIImage) {
-        cameraView.stopSession()
+        cameraView.session.stopRunning()
         startConfirmController(uiImage: uiImage)
         toggleButtons(enabled: true)
     }
     
     internal func layoutCameraResult(asset: PHAsset) {
-        cameraView.stopSession()
+        cameraView.session.stopRunning()
         startConfirmController(asset: asset)
         toggleButtons(enabled: true)
     }
@@ -642,7 +657,6 @@ open class CameraViewController: UIViewController {
             }
             
             guard let image = image else {
-                self?.cameraView.startSession()
                 return
             }
             
@@ -663,7 +677,6 @@ open class CameraViewController: UIViewController {
             }
 
             guard let image = image, let asset = asset else {
-                self?.cameraView.startSession()
                 return
             }
 
