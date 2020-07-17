@@ -124,9 +124,10 @@ public class ConfirmViewController: UIViewController {
     
     private func presentRetakeAlert(message: String) {
         let alertController = AlertViewController()
-        alertController.setup(with: .init(title: "Please retake a photo", message: message, buttonTitle: "RETAKE", buttonAction: {
-            self.cancel()
-        }))
+        let cancelAction: VoidClosure = { [weak self] in self?.cancel() }
+        alertController.setup(with: .init(title: "Please retake a photo",
+                                          message: message,
+                                          buttons: [.init(title: "RETAKE", isFocused: true, action: cancelAction)]))
         present(alertController, animated: true)
     }
 
