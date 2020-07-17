@@ -188,6 +188,18 @@ open class CameraViewController: UIViewController {
         return view
     }()
     
+    let bottomLeftContainerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    let bottomRightContainerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     private let allowsLibraryAccess: Bool
   
     public init(croppingParameters: CroppingParameters = CroppingParameters(),
@@ -233,9 +245,11 @@ open class CameraViewController: UIViewController {
             cameraButton,
             closeButton,
             flashButton,
-            containerSwapLibraryButton,
-            recognitionResultLabel].forEach({ view.addSubview($0) })
-        [libraryButton].forEach({ containerSwapLibraryButton.addSubview($0) })
+            recognitionResultLabel,
+            bottomLeftContainerView,
+            bottomRightContainerView].forEach({ view.addSubview($0) })
+        bottomLeftContainerView.addSubview(libraryButton)
+        bottomRightContainerView.addSubview(swapButton)
         view.setNeedsUpdateConstraints()
     }
     
@@ -262,19 +276,6 @@ open class CameraViewController: UIViewController {
         
         removeCloseButtonConstraints()
         configCloseButtonEdgeConstraint(statusBarOrientation)
-//        configCloseButtonGravityConstraint(statusBarOrientation)
-        
-        removeContainerConstraints()
-        configContainerEdgeConstraint(statusBarOrientation)
-        configContainerGravityConstraint(statusBarOrientation)
-        
-        removeSwapButtonConstraints()
-        configSwapButtonEdgeConstraint(statusBarOrientation)
-        configSwapButtonGravityConstraint(portrait)
-
-        removeLibraryButtonConstraints()
-        configLibraryEdgeButtonConstraint(statusBarOrientation)
-        configLibraryGravityButtonConstraint(portrait)
         
         configFlashEdgeButtonConstraint(statusBarOrientation)
         configFlashGravityButtonConstraint(statusBarOrientation)
@@ -283,6 +284,26 @@ open class CameraViewController: UIViewController {
         configRecognitionResultLabelConstraints()
 
         rotate(actualInterfaceOrientation: statusBarOrientation)
+        
+        bottomLeftContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        bottomLeftContainerView.trailingAnchor.constraint(equalTo: cameraButton.leadingAnchor).isActive = true
+        bottomLeftContainerView.bottomAnchor.constraint(equalTo: cameraButton.bottomAnchor).isActive = true
+        bottomLeftContainerView.topAnchor.constraint(equalTo: cameraButton.topAnchor).isActive = true
+        
+        libraryButton.heightAnchor.constraint(equalToConstant: 32.0).isActive = true
+        libraryButton.widthAnchor.constraint(equalToConstant: 32.0).isActive = true
+        libraryButton.centerYAnchor.constraint(equalTo: bottomLeftContainerView.centerYAnchor).isActive = true
+        libraryButton.centerXAnchor.constraint(equalTo: bottomLeftContainerView.centerXAnchor).isActive = true
+        
+        bottomRightContainerView.leadingAnchor.constraint(equalTo: cameraButton.trailingAnchor).isActive = true
+        bottomRightContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        bottomRightContainerView.bottomAnchor.constraint(equalTo: cameraButton.bottomAnchor).isActive = true
+        bottomRightContainerView.topAnchor.constraint(equalTo: cameraButton.topAnchor).isActive = true
+        
+        swapButton.heightAnchor.constraint(equalToConstant: 32.0).isActive = true
+        swapButton.widthAnchor.constraint(equalToConstant: 32.0).isActive = true
+        swapButton.centerYAnchor.constraint(equalTo: bottomRightContainerView.centerYAnchor).isActive = true
+        swapButton.centerXAnchor.constraint(equalTo: bottomRightContainerView.centerXAnchor).isActive = true
         
         super.updateViewConstraints()
     }
