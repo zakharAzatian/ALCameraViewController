@@ -81,6 +81,11 @@ open class CameraViewController: UIViewController {
     var flashButtonGravityConstraint: NSLayoutConstraint?
     
     var objectRecognizer: ObjectRecognizer?
+    var detectionAreaTitle: String = "" {
+        didSet {
+            detectionAreaView.setTitle(detectionAreaTitle, font: UIFont.montserratSemiBold(size: 17))
+        }
+    }
     var overlayImage: UIImage? {
         didSet {
             overlayImageView.image = overlayImage
@@ -141,7 +146,6 @@ open class CameraViewController: UIViewController {
     public let detectionAreaView: DetectionAreaView = {
         let view = DetectionAreaView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.setTitle("Left palm", font: UIFont.montserratSemiBold(size: 17))
         return view
     }()
     
