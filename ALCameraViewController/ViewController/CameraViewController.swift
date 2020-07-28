@@ -653,6 +653,7 @@ open class CameraViewController: UIViewController {
     }
     
     private func startConfirmController(uiImage: UIImage) {
+        guard let uiImage = uiImage.rotate(radians: .pi * 2) else { return }
         let confirmViewController = ConfirmViewController(image: uiImage)
         confirmViewController.objectRecognizer = objectRecognizer
         confirmViewController.onComplete = { [weak self] image, asset in
