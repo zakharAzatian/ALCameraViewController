@@ -139,6 +139,7 @@ open class CameraViewController: UIViewController {
     
     public let recognitionResultLabel: UILabel = {
         let label = UILabel()
+        label.isHidden = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -181,6 +182,7 @@ open class CameraViewController: UIViewController {
     
     let flashButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 44, height: 44))
+        button.isHidden = true
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(UIImage(named: "flashAutoIcon",
                                 in: CameraGlobals.shared.bundle,
