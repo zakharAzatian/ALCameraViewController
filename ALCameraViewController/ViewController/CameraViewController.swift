@@ -253,7 +253,6 @@ open class CameraViewController: UIViewController {
             overlayImageView,
             cameraButton,
             closeButton,
-            flashButton,
             recognitionResultLabel,
             bottomLeftContainerView,
             bottomRightContainerView].forEach({ view.addSubview($0) })
@@ -285,9 +284,6 @@ open class CameraViewController: UIViewController {
         
         removeCloseButtonConstraints()
         configCloseButtonEdgeConstraint(statusBarOrientation)
-        
-        configFlashEdgeButtonConstraint(statusBarOrientation)
-        configFlashGravityButtonConstraint(statusBarOrientation)
         
         configDetectionAreaViewConstraints()
         configRecognitionResultLabelConstraints()
