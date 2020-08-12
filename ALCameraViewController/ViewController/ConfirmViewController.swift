@@ -16,8 +16,10 @@ public class ConfirmViewController: UIViewController {
     @IBOutlet weak var confirmButton: UIButton!
     @IBOutlet weak var scanningProgressBar: UIProgressView!
     @IBOutlet weak var bottomScanningView: UIView!
+    @IBOutlet weak var scanningLabel: UILabel!
     @IBOutlet weak var retakeButton: UIButton! {
         didSet {
+            retakeButton.setTitle("RETAKE".localized(), for: .normal)
             retakeButton.clipsToBounds = true
             let blur = UIVisualEffectView(effect: UIBlurEffect(style: .light))
             blur.frame = retakeButton.bounds
@@ -62,6 +64,8 @@ public class ConfirmViewController: UIViewController {
 	
 	public override func viewDidLoad() {
 		super.viewDidLoad()
+        
+        scanningLabel.text = "Scanning".localized()
 		view.backgroundColor = UIColor.black
 		showSpinner()
 		disable()
@@ -125,9 +129,9 @@ public class ConfirmViewController: UIViewController {
     private func presentRetakeAlert(message: String) {
         let alertController = AlertViewController()
         let cancelAction: VoidClosure = { [weak self] in self?.cancel() }
-        alertController.setup(with: .init(title: "Please retake a photo",
+        alertController.setup(with: .init(title: "Please retake a photo".localized(),
                                           message: message,
-                                          buttons: [.init(title: "RETAKE", isFocused: true, action: cancelAction)]))
+                                          buttons: [.init(title: "RETAKE".localized(), isFocused: true, action: cancelAction)]))
         present(alertController, animated: true)
     }
 
