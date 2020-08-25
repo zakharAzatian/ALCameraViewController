@@ -116,6 +116,11 @@ open class CameraViewController: UIViewController {
         let cameraView = CameraView()
         cameraView.translatesAutoresizingMaskIntoConstraints = false
         
+        guard let objectRecognizer = objectRecognizer else {
+            cameraButton.isEnabled = true
+            return cameraView
+        }
+        
         let recognizeCompletion: (Bool, String) -> Void = { [recognitionResultLabel, cameraButton] isRecognized, result in
             DispatchQueue.main.async {
                 cameraButton.isEnabled = isRecognized
@@ -124,7 +129,7 @@ open class CameraViewController: UIViewController {
         }
         cameraView.captureOutputEvent = { [objectRecognizer, weak self] buffer in
             guard self?.shouldRecongnize == true else { return }
-            objectRecognizer?.recognize(buffer: buffer, completion: recognizeCompletion)
+            objectRecognizer.recognize(buffer: buffer, completion: recognizeCompletion)
         }
         return cameraView
     }()
