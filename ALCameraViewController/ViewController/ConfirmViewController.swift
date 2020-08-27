@@ -135,10 +135,15 @@ public class ConfirmViewController: UIViewController {
         present(alertController, animated: true)
     }
 
-	private func buttonActions() {
-		confirmButton.action = { [weak self] in
+    private func buttonActions() {
+        confirmButton.action = { [weak self] in
             guard let image = self?.imageView.image else { return }
-            self?.objectRecognizer?.recognize(image: image, completion: { result in
+            guard let recognizer = self?.objectRecognizer else {
+                self?.startScanning(completion: { self?.confirmPhoto(image) })
+                return
+            }
+            
+            recognizer.recognize(image: image, completion: { result in
                 switch result {
                 case .success:
                     self?.startScanning(completion: {
