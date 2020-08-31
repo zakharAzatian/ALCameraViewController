@@ -147,29 +147,19 @@ public class ConfirmViewController: UIViewController {
             
             let croppedImage = self.crop(image, targetAreaFrame: self.detectionAreaView.areaFrame, scrollView: self.scrollView) ?? image
             
-            let vc = UIViewController()
-            let imageView = UIImageView()
-            imageView.contentMode = .scaleAspectFit
-            imageView.image = croppedImage
-            
-            vc.view.addSubview(imageView)
-            imageView.pinToSuperview()
-            
-            self.present(vc, animated: true)
-            
-//            guard let recognizer = self.objectRecognizer else {
-//                self.startScanning(completion: { self.confirmPhoto(croppedImage) })
-//                return
-//            }
-//
-//            recognizer.recognize(image: croppedImage, completion: { result in
-//                switch result {
-//                case .success:
-//                    self.startScanning(completion: { self.confirmPhoto(croppedImage) })
-//                case .failure(let error):
-//                    self.presentRetakeAlert(message: error.localizedDescription)
-//                }
-//            })
+            guard let recognizer = self.objectRecognizer else {
+                self.startScanning(completion: { self.confirmPhoto(croppedImage) })
+                return
+            }
+
+            recognizer.recognize(image: croppedImage, completion: { result in
+                switch result {
+                case .success:
+                    self.startScanning(completion: { self.confirmPhoto(croppedImage) })
+                case .failure(let error):
+                    self.presentRetakeAlert(message: error.localizedDescription)
+                }
+            })
         }
 		retakeButton.action = { [weak self] in self?.cancel() }
 	}
@@ -238,7 +228,7 @@ public class ConfirmViewController: UIViewController {
 		
 		if let asset = asset {
 			var fetcher = SingleImageFetcher()
-				.onSuccess { [weak self] image in
+				.onSuccess { [weak self] _ in
 					self?.onComplete?(image, self?.asset)
 					self?.hideSpinner()
 					self?.enable()
@@ -285,44 +275,72 @@ public class ConfirmViewController: UIViewController {
 		
 		let desc = localizedString("error.cant-fetch-photo.description")
 		
-		permissionsView.configureInView(view, title: error.localizedDescription, description: desc, completion: { [weak self] in self?.cancel() })
-	}
+        permissionsView.configureInView(view, title: error.localizedDescription, description: desc, completion: { [weak self] in self?.cancel() })
+    }
     
     private func crop(_ image: UIImage, targetAreaFrame: CGRect, scrollView: UIScrollView) -> UIImage? {
-        let ratio = image.size.width / image.size.height
-        let width = view.frame.width
-        let height = width * ratio
+        var ratio: CGFloat = 0
+        var imageHeight: CGFloat = 0
         
+        if image.size.width > image.size.height {
+            ratio = image.size.height / image.size.width
+            imageHeight = imageView.frame.width * ratio
+        } else {
+            ratio = image.size.width / image.size.height
+            imageHeight = imageView.frame.width / ratio
+        }
         
-//        let y = frame.height -
+        let imageSize = CGSize(width: imageView.frame.width, height: imageHeight)
+        let imageOrigin = CGPoint(x: imageView.center.x - imageSize.width / 2, y: imageView.center.y - imageSize.height / 2)
         
+        let targetAreaOriginInView = CGPoint(x: targetAreaFrame.origin.x + scrollView.contentOffset.x, y: targetAreaFrame.origin.y - imageOrigin.y + scrollView.contentOffset.y)
+        let targetAreaMaxPointInView = CGPoint(x: targetAreaOriginInView.x + targetAreaFrame.size.width,
+                                               y: targetAreaOriginInView.y + targetAreaFrame.size.height)
+        let targetAreaOriginInPercentage = CGPoint(x: targetAreaOriginInView.x / imageSize.width,
+                                                   y: targetAreaOriginInView.y / imageSize.height)
+        let targetAreaMaxPointInPercentage = CGPoint(x: targetAreaMaxPointInView.x / imageSize.width,
+                                                     y: targetAreaMaxPointInView.y / imageSize.height)
         
+        let targetAreaOriginInImage = CGPoint(x: image.size.width * targetAreaOriginInPercentage.x,
+                                              y: image.size.height * targetAreaOriginInPercentage.y)
+        let targetAreaMaxPointInImage = CGPoint(x: image.size.width * targetAreaMaxPointInPercentage.x,
+                                                y: image.size.height * targetAreaMaxPointInPercentage.y)
+        let targetAreaSizeInImage = CGSize(width: targetAreaMaxPointInImage.x - targetAreaOriginInImage.x,
+                                           height: targetAreaMaxPointInImage.y - targetAreaOriginInImage.y)
         
-        let offset = scrollView.contentOffset
-        let contentSize = imageView.contentClippingRect.size
-        let cropArea = CGRect(origin: CGPoint(x: offset.x + targetAreaFrame.origin.x, y: offset.y + targetAreaFrame.origin.y),
-                              size: targetAreaFrame.size)
-        let minPoint = CGPoint(x: cropArea.minX / contentSize.width, y: cropArea.minY / contentSize.height)
-        let maxPoint = CGPoint(x: cropArea.maxX / contentSize.width, y: cropArea.maxY / contentSize.height)
-        
-        let imageSize = image.size
-        
-        let cropAreaInImageOrigin = CGPoint(x: imageSize.width * minPoint.x, y: imageSize.height * minPoint.y)
-        let cropAreaMaxPoint = CGPoint(x: imageSize.width * maxPoint.x, y: imageSize.height * maxPoint.y)
-        
-        let cropAreaInImageSize = CGSize(width: cropAreaMaxPoint.x - cropAreaInImageOrigin.x, height: cropAreaMaxPoint.y - cropAreaInImageOrigin.y)
-        let imageCroppingRect = CGRect(origin: cropAreaInImageOrigin, size: cropAreaInImageSize)
-        
+        let imageCroppingRect = CGRect(origin: targetAreaOriginInImage, size: targetAreaSizeInImage)
         guard let imageRef = image.cgImage?.cropping(to: imageCroppingRect) else { return nil }
         return UIImage(cgImage: imageRef, scale: image.scale, orientation: image.imageOrientation)
     }
-
 }
 
 // MARK: - UIScrollViewDelegate
 extension ConfirmViewController: UIScrollViewDelegate {
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageView
+    }
+    
+    public func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        guard let imageView = imageView else { return }
+
+        let boundsSize = scrollView.bounds.size
+        var frameToCenter = imageView.frame
+
+        // Center horizontally
+        if frameToCenter.size.width < boundsSize.width {
+            frameToCenter.origin.x = (boundsSize.width - frameToCenter.size.width) / 2
+        } else {
+            frameToCenter.origin.x = 0
+        }
+
+        // Center vertically
+        if frameToCenter.size.height < boundsSize.height {
+            frameToCenter.origin.y = (boundsSize.height - frameToCenter.size.height) / 2
+        } else {
+            frameToCenter.origin.y = 0
+        }
+
+        imageView.frame = frameToCenter
     }
 }
 
