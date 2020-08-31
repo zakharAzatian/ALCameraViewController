@@ -14,7 +14,7 @@ public typealias CameraViewCompletion = (UIImage?, PHAsset?) -> Void
 
 public extension CameraViewController {
     /// Provides an image picker wrapped inside a UINavigationController instance
-    class func imagePickerViewController(croppingParameters: CroppingParameters, recognizer: ObjectRecognizer?, completion: @escaping CameraViewCompletion) -> UINavigationController {
+    class func imagePickerViewController(croppingParameters: CroppingParameters, recognizer: ObjectRecognizer?, title: String, completion: @escaping CameraViewCompletion) -> UINavigationController {
         let imagePicker = PhotoLibraryViewController()
         let navigationController = UINavigationController(rootViewController: imagePicker)
         
@@ -24,7 +24,7 @@ public extension CameraViewController {
 
         imagePicker.onSelectionComplete = { [weak imagePicker] asset in
             if let asset = asset {
-                let confirmController = ConfirmViewController(asset: asset)
+                let confirmController = ConfirmViewController(asset: asset, title: title)
                 confirmController.objectRecognizer = recognizer
                 confirmController.onComplete = { [weak imagePicker] image, asset in
                     if let image = image, let asset = asset {
@@ -95,6 +95,7 @@ open class CameraViewController: UIViewController {
 
     var tipsType: TipsType = .hand
     var tipsWasNotPresented = true
+    var cameraPosition: AVCaptureDevice.Position = .front
     
     private var shouldRecongnize = false
     
@@ -115,6 +116,7 @@ open class CameraViewController: UIViewController {
     
     lazy private(set) var cameraView: CameraView = {
         let cameraView = CameraView()
+        cameraView.currentPosition = cameraPosition
         cameraView.translatesAutoresizingMaskIntoConstraints = false
         
         guard let objectRecognizer = objectRecognizer else {
@@ -609,7 +611,7 @@ open class CameraViewController: UIViewController {
     }
     
     internal func showLibrary() {
-        let imagePicker = CameraViewController.imagePickerViewController(croppingParameters: croppingParameters, recognizer: objectRecognizer) { [weak self] image, asset in
+        let imagePicker = CameraViewController.imagePickerViewController(croppingParameters: croppingParameters, recognizer: objectRecognizer, title: detectionAreaTitle) { [weak self] image, asset in
             defer {
                 self?.dismiss(animated: true, completion: nil)
             }
@@ -658,7 +660,7 @@ open class CameraViewController: UIViewController {
     
     private func startConfirmController(uiImage: UIImage) {
         guard let uiImage = uiImage.rotate(radians: .pi * 2) else { return }
-        let confirmViewController = ConfirmViewController(image: uiImage)
+        let confirmViewController = ConfirmViewController(image: uiImage, title: detectionAreaTitle)
         confirmViewController.objectRecognizer = objectRecognizer
         confirmViewController.onComplete = { [weak self] image, asset in
             defer {
@@ -678,7 +680,7 @@ open class CameraViewController: UIViewController {
     }
     
     private func startConfirmController(asset: PHAsset) {
-        let confirmViewController = ConfirmViewController(asset: asset)
+        let confirmViewController = ConfirmViewController(asset: asset, title: detectionAreaTitle)
         confirmViewController.objectRecognizer = objectRecognizer
         confirmViewController.onComplete = { [weak self] image, asset in
             defer {

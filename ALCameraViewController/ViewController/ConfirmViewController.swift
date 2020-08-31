@@ -28,7 +28,7 @@ public class ConfirmViewController: UIViewController {
             retakeButton.insertSubview(blur, at: 0)
         }
     }
-
+    
     private let detectionAreaView = DetectionAreaView()
     private var spinner: UIActivityIndicatorView? = nil
     private var isFirstLayout = true
@@ -38,16 +38,19 @@ public class ConfirmViewController: UIViewController {
 
 	let asset: PHAsset?
 	let image: UIImage?
+    let detectionAreaTitle: String?
 	
-	public init(image: UIImage) {
+    public init(image: UIImage, title: String) {
 		self.asset = nil
 		self.image = image
+        self.detectionAreaTitle = title
 		super.init(nibName: "ConfirmViewController", bundle: CameraGlobals.shared.bundle)
 	}
 	
-	public init(asset: PHAsset) {
+	public init(asset: PHAsset, title: String) {
 		self.asset = asset
 		self.image = nil
+        self.detectionAreaTitle = title
 		super.init(nibName: "ConfirmViewController", bundle: CameraGlobals.shared.bundle)
 	}
 	
@@ -113,6 +116,7 @@ public class ConfirmViewController: UIViewController {
     }
     
     private func setupDetectionAreaView() {
+        detectionAreaView.setTitle(detectionAreaTitle ?? "", font: UIFont.montserratSemiBold(size: 17))
         detectionAreaView.isUserInteractionEnabled = false
         view.insertSubview(detectionAreaView, aboveSubview: scrollView)
         detectionAreaView.pinToView(scrollView)
