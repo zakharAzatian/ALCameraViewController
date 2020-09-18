@@ -69,6 +69,7 @@ public class CameraView: UIView {
         }
     }
     
+    // pecker: ignore
     public func stopSession() {
         cameraQueue.sync {
             session?.stopRunning()

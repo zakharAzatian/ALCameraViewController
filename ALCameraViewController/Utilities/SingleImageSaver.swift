@@ -12,6 +12,7 @@ import Photos
 public typealias SingleImageSaverSuccess = (PHAsset) -> Void
 public typealias SingleImageSaverFailure = (NSError) -> Void
 
+// pecker:ignore all
 public class SingleImageSaver {
     private let errorDomain = "com.zero.singleImageSaver"
     

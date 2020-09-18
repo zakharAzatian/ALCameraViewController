@@ -65,6 +65,7 @@ public class PhotoLibraryViewController: UIViewController {
         return UIStatusBarStyle.lightContent
     }
     
+    // pecker:ignore
     public func present(_ inViewController: UIViewController, animated: Bool) {
         let navigationController = UINavigationController(rootViewController: self)
         navigationController.navigationBar.barTintColor = UIColor.black

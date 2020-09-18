@@ -44,6 +44,7 @@ public class SingleImageFetcher {
         return self
     }
     
+    // pecker: ignore
     public func setCropRect(_ cropRect: CGRect) -> Self {
         self.cropRect = cropRect
         return self

@@ -652,12 +652,6 @@ open class CameraViewController: UIViewController {
         toggleButtons(enabled: true)
     }
     
-    internal func layoutCameraResult(asset: PHAsset) {
-        cameraView.session.stopRunning()
-        startConfirmController(asset: asset)
-        toggleButtons(enabled: true)
-    }
-    
     private func startConfirmController(uiImage: UIImage) {
         guard let uiImage = uiImage.rotate(radians: .pi * 2) else { return }
         let confirmViewController = ConfirmViewController(image: uiImage, title: detectionAreaTitle)
